@@ -22,7 +22,7 @@ snipman is a snippet manager written in AutoHotkey v2
 - Alternatively, will load snippets directly from plain text files or scripts
 - Can position the caret inside the snippet after inserting it into a document (see demo)
 
-![demo](./.github/snipman.gif)
+![demo](./.github/snipman2.gif)
 
 ## Thanks
 
