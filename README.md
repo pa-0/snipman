@@ -26,7 +26,8 @@ snipman is a snippet manager written in AutoHotkey v2
 
 ## Thanks
 
-- Ethan Piliavin for [snips]( https://github.com/ethanpil/snips), the inspiration for snipman
+- Ethan Piliavin (@ethanpil) for [snips]( https://github.com/ethanpil/snips), the inspiration for snipman
+- Also, thanks @ethanpil for your 'snips' folder examples
 - [AutoHotKey](https://autohotkey.com/) developers and forums.
 
 ## License and Copyright
