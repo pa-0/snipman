@@ -1,0 +1,121 @@
+name: snipman CI
+on:
+  workflow_dispatch:
+  push:
+    branches: main
+    paths-ignore:
+      - '**/README.md'
+      - '**/.github/**'
+  pull_request:
+    branches: main
+    paths-ignore:
+      - '**/README.md'
+      - '**/.github/**'
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: repo      
+      - name: Build x64
+        uses: benmusson/ahk2exe-action@v1
+        with:
+          in: .\snipman.ahk
+          ahk-tag: latest
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout wiki
+        uses: actions/checkout@v4
+        if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+        with:
+          repository: ${{github.repository}}.wiki
+          path: wiki
+      #- name: Upload binaries
+      #  if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+      #  shell: cmd
+      #  run: |
+      #    copy repo\wcap-x64.exe wiki
+      #    copy repo\wcap-arm64.exe wiki
+      #    cd wiki
+      #    git config --local user.email "action@github.com"
+      #    git config --local user.name "GitHub Action"
+      #    git commit --all --amend --no-edit
+      #    git push --force-with-lease
+      - name: Upload binary
+        if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+        shell: cmd
+        run: |
+          cd repo
+          7z a wcap-x64.zip wcap-x64.exe
+          7z a wcap-arm64.zip wcap-arm64.exe
+          gh release create v1.0.0 .\wcap-x64.zip .\wcap-arm64.zip --notes "just a mirror" 
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}on: [push]
+
+
+
+name: (Example 1 AHK Converter) Build Binary and release
+
+on: # Only run when a release is created
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  BuildAndRelease:
+    name: Build and Release
+    runs-on: windows-latest
+    steps:
+      - name: Checkout # Get repository
+        uses: actions/checkout@v2
+
+      - name: Ahk2Exe # Build binary
+        id: ahk2exe
+        uses: Banaanae/Action-Ahk2Exe@main
+        with:
+            in: QuickConvertorV2.ahk # TODO: v2converter.ahk
+          
+      - name: Release # Upload binary to most recent release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: QuickConvertorV2.exe
+
+
+
+name: (Example 2 vim.ahk) Build
+
+jobs:
+  build:
+    name: Build
+    if: startsWith( github.ref, 'refs/tags/v' )
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build with latest AutoHotkey release
+        uses: benmusson/ahk2exe-action@v1
+        with:
+          in: .\vim.ahk
+          out: .\vim_ahk\vim_ahk.exe
+          target: x64
+          compression: upx
+          ahk-tag: latest
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy icons
+        shell: cmd
+        run: xcopy /i /y vim_ahk_icons vim_ahk\vim_ahk_icons
+      - name: zip
+        shell: pwsh
+        run:
+          Compress-Archive -Path "vim_ahk"  -DestinationPath vim_ahk-${{github.ref_name}}.zip
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            vim_ahk-${{github.ref_name}}.zip

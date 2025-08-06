@@ -1,0 +1,4 @@
+﻿foreach ($arr as $val) {
+    
+}
+<<-2
