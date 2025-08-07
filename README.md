@@ -29,13 +29,17 @@ snipman is a snippet manager written in AutoHotkey v2
   
   ![demo2](./.github/snipman.gif)
 
-## Thanks
+## Special Thanks and Credits to:
 
-- Ethan Piliavin (@ethanpil) for [snips]( https://github.com/ethanpil/snips), the inspiration for snipman
-- Also, thanks @ethanpil for your 'snips' folder examples
+- @ethanpil for [snips]( https://github.com/ethanpil/snips), the inspiration for snipman as well as the snippet examples ('snips' folder)
+- @just me (on AutoHotkey Forum) for Class ToolTipOptions, and the Example Settings GUI,
+- @nperovic for all of their work on Dark mode GUIs, including DarkListView.ahk and SetWindowColor.ahk,
+- @geek (on AutoHotkey Forum) for cJSON.ahk,
+- @The-CoDingman on GitHub for OD_Colors,
+- @MrDoge (on AutoHotkey Forum) for svgtoHBITMAP.ahk, and
 - [AutoHotKey](https://autohotkey.com/) developers and forums.
 
 ## License and Copyright
 
 Copyright (C) Peter Abbasi 2025
-Released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.en.html), included as license.txt
+Released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.en.html), included as LICENSE

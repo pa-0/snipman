@@ -181,7 +181,7 @@ snipmanGUI(fontSize :=8, font := "Segoe UI"){
     btn.SetFont("s8", "Segoe MDL2 Assets")
     lv := mg.Add("ListView", "xm ym+25 w220 r25 c" fontcol " Background" mg.BackColor " -E0x200", ["Language", "Match", "ID"])
     lv.Opt("-Multi -Grid +HDR")
-    sb := mg.Add("Text","c" fontcol " xm y+40 r1 w100", (statustxt := "Snippet Count: "))
+    sb := mg.Add("Text","c" fontcol " xm y+37 r1 w100", (statustxt := "Snippet Count: "))
     if (guiTheme = "dark") {
         lv.SetDarkMode()                
         SetDarkControls(mg)
@@ -299,9 +299,10 @@ snipmanGUI(fontSize :=8, font := "Segoe UI"){
             lv.Opt("+Redraw")
         }
         else {
-            lv.Visible := false
-            tv.Visible := true
+            lv.Visible  := false
+            tv.Visible  := true
             btn.Visible := true
+            btnText     := Chr(0xECCD)
             sb.value := "Snippet Count: " smArray.Length
         }
     }
@@ -577,15 +578,18 @@ OnToggle(A_GuiEvent := "", GuiCtrlObj := "", Info := "", *){
 }
 
 OnEscape(*){
+    global btn, btnText
     lvshown := lv.Visible
     ctrlfocus := ControlGetFocus(mg)
     if (ctrlfocus = ed.hwnd){
         if (ed.Value != ""){
             ed.Value := ""
             RefreshSnipman()
-            lv.Visible := false
-            tv.Visible := true
+            lv.Visible  := false
+            tv.Visible  := true
             btn.Visible := true
+            btnText     := Chr(0xECCD)
+            btn.Text    := btnText
         }
         else{
             DestroyTip()
