@@ -3,7 +3,7 @@
 #NoTrayIcon
 #SingleInstance force
 
-APPNAME := "snipman", APPVERSION := "1.0.23"
+APPNAME := "snipman", APPVERSION := "1.0.24"
 ;@Ahk2Exe-Let Name = %A_PriorLine~U)^(.+"){1}(.+)".*$~$2%
 ;@Ahk2Exe-Let Version = %A_PriorLine~U)^(.+"){3}(.+)".*$~$2%
 ;@Ahk2Exe-Let Svg = %A_ScriptDir%\icons
