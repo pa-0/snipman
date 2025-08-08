@@ -3,7 +3,7 @@
 #NoTrayIcon
 #SingleInstance force
 
-APPNAME := "snipman", APPVERSION := "1.0.22"
+APPNAME := "snipman", APPVERSION := "1.0.23"
 ;@Ahk2Exe-Let Name = %A_PriorLine~U)^(.+"){1}(.+)".*$~$2%
 ;@Ahk2Exe-Let Version = %A_PriorLine~U)^(.+"){3}(.+)".*$~$2%
 ;@Ahk2Exe-Let Svg = %A_ScriptDir%\icons
@@ -82,7 +82,7 @@ APPNAME := "snipman", APPVERSION := "1.0.22"
 ;@Ahk2Exe-%U_Bin%  "%U_au%2.>AUTOHOTKEY SCRIPT<.$APPLICATION SOURCE"
 ;@Ahk2Exe-Cont  "%U_au%.AutoHotkeyGUI.snipman_class"
 ;@Ahk2Exe-PostExec "BinMod.exe" "%A_WorkFileName%" /SetUTC
-;@Ahk2Exe-PostExec "pwsh.exe" "%A_ScriptDir%\build\SignCode.ps1" -exe "%A_WorkFileName%"
+;@Ahk2Exe-PostExec "pwsh.exe" "%A_ScriptDir%\.github\SignCode.ps1" -exe "%A_WorkFileName%"
 
 #Include <JSON>
 #Include <mcParser>
@@ -329,7 +329,12 @@ snipmanGUI(fontSize :=8, font := "Segoe UI"){
                             ;StrPut(val, pszText)
                             val := FileRead(sname)
                             langico := GetLangIcon(cat, cat)
-                            CreateTip(val, base, langico)
+                            if (langico != false){
+                                CreateTip(val, base, langico)
+                            }
+                            else {
+                                CreateTip(val, base)
+                            }
                         }
                     }
                 }
@@ -343,7 +348,12 @@ snipmanGUI(fontSize :=8, font := "Segoe UI"){
                                             ;StrPut(val, pszText)
                                             snip := val
                                             langico := GetLangIcon(syn, dir)
-                                            CreateTip(val, name, langico)
+                                            if (langico != false){
+                                                CreateTip(val, name, langico)
+                                            }
+                                            else {
+                                                CreateTip(val, name)
+                                            }
                                         }
                                     }
                                 }
@@ -386,7 +396,12 @@ snipmanGUI(fontSize :=8, font := "Segoe UI"){
                                 if (rowId = sid){
                                     val := FileRead(sname)
                                     langico := GetLangIcon(cat, cat)
-                                    CreateTip(val, base, langico)
+                                    if (langico != false){
+                                        CreateTip(val, base, langico)
+                                    }
+                                    else {
+                                        CreateTip(val, base)
+                                    }
                                     prevrow := rowId
                                 }
                             }
@@ -399,7 +414,12 @@ snipmanGUI(fontSize :=8, font := "Segoe UI"){
                                             for val, info in nmap2 {
                                                 if (rowId = sid){
                                                     langico := GetLangIcon(syn, dir)
-                                                    CreateTip(val, name, langico)
+                                                    if (langico != false){
+                                                        CreateTip(val, name, langico)
+                                                    }
+                                                    else {
+                                                        CreateTip(val, name)
+                                                    }
                                                     prevrow := rowId
                                                 }
                                             }
@@ -603,13 +623,18 @@ OnEscape(*){
 
 SetDarkControls(gui){
     for ctl in gui {
+        isCFD := (ctl.Type = "Edit" || ctl.Type = "ComboBox" || ctl.Type = "DDL") ? "DarkMode_CFD" : "DarkMode_Explorer"
         if (isEdit := ctl.Type = "Edit"){
             ctl.Opt("-VScroll cF8F8F8 Background191919")
         }
         if (!HasMethod(ctl, "SetFont")){
             ctl.SetFont("cF8F8F8")
         }
-        SetDarkControl(ctl, isEdit ? "DarkMode_CFD" : "DarkMode_Explorer")
+        SetDarkControl(ctl, isCFD)
+        if (ctl.Type = "ComboBox"){
+            MsgBox ctl.Type
+            DllCall("InvalidateRect", "Ptr", ctl.hWnd, "Ptr", 0, "Int", true)
+        }
     }
     SetDarkMode(gui)
 }
@@ -621,7 +646,7 @@ SetDarkControl(ctrl, style := "DarkMode_Explorer"){
         DllCall("Dwmapi\DwmSetWindowAttribute", "Ptr", hwnd, "UInt", 33, "Ptr*", 3, "UInt", 4)
         VarSetStrCapacity(&className, 1024)
         if (DllCall("user32\GetClassName", "ptr", hwnd, "str", className, "int", 512, "int")){
-            if (className = "SysListView32") || (className = "SysTreeView32"){
+            if (className = "SysListView32") || (className = "SysTreeView32" || (className = "ComboBox")){
                 return !DllCall("uxtheme\SetWindowTheme", "ptr", hwnd, "str", style, "ptr", 0)
             }
             else {
@@ -632,13 +657,18 @@ SetDarkControl(ctrl, style := "DarkMode_Explorer"){
 }
 
 SetDarkMode(_obj){
-    For v in [135, 136]
+    For v in [135, 136]{
         DllCall(DllCall("GetProcAddress", "ptr", DllCall("GetModuleHandle", "str", "uxtheme", "ptr"), "ptr", v, "ptr"), "int", 2)
-
-    if !(attr := VerCompare(A_OSVersion, "10.0.18985") >= 0 ? 20 : VerCompare(A_OSVersion, "10.0.17763") >= 0 ? 19 : 0)
+    }
+    if !(attr := VerCompare(A_OSVersion, "10.0.18985") >= 0 ? 20 : VerCompare(A_OSVersion, "10.0.17763") >= 0 ? 19 : 0){
         return false
-    
+    }
     DllCall("dwmapi\DwmSetWindowAttribute", "ptr", _obj.hwnd, "int", attr, "int*", true, "int", 4)
+    DllCall("RedrawWindow", "Ptr", _obj.Hwnd, "Ptr", 0, "Ptr", 0, "UInt", 0x0285)
+    for hWnd, gco in _obj {
+        DllCall("RedrawWindow", "Ptr", gco.Hwnd, "Ptr", 0, "Ptr", 0, "UInt", 0x0001)
+        DllCall("InvalidateRect", "Ptr", gco.Hwnd, "Ptr", 0, "Int", true)
+    }
 }
 
 OnTvDblClick(A_GuiEvent := "", GuiCtrlObj := "", Info := "", *){   
@@ -713,7 +743,12 @@ OnLvSelect(A_GuiEvent := "", GuiCtrlObj := "", Info := "", *){
                 if (rowId = sid) && (rowId != prer ){
                     val := FileRead(sname)
                     langico := GetLangIcon(cat, cat)
-                    CreateTip(val, base, langico)
+                    if (langico != false){
+                        CreateTip(val, base, langico)
+                    }
+                    else {
+                        CreateTip(val, base)
+                    }
                 }
             }
         }
@@ -725,7 +760,12 @@ OnLvSelect(A_GuiEvent := "", GuiCtrlObj := "", Info := "", *){
                             for val, info in nmap2 {
                                 if (rowId = sid){
                                     langico := GetLangIcon(syn, dir)
-                                    CreateTip(val, name, langico)
+                                    if (langico != false){
+                                        CreateTip(val, name, langico)
+                                    }
+                                    else {
+                                        CreateTip(val, name)
+                                    }
                                 }
                             }
                         }
@@ -755,7 +795,12 @@ OnTvSelect(A_GuiEvent := "", GuiCtrlObj := "", Info := "", *){
                             for val, info in nmap2 {
                                 if (snipid = sid) {
                                     langico := GetLangIcon(syn, dir)
-                                    CreateTip(val, name, langico)
+                                    if (langico != false){
+                                        CreateTip(val, name, langico)
+                                    }
+                                    else {
+                                        CreateTip(val, name)
+                                    }
                                 }
                             }
                         }
@@ -772,7 +817,12 @@ OnTvSelect(A_GuiEvent := "", GuiCtrlObj := "", Info := "", *){
                 if (snipId = sid){
                     val := FileRead(sname)
                     langico := GetLangIcon(cat, cat)
-                    CreateTip(val, base, langico)
+                    if (langico != false){
+                        CreateTip(val, base, langico)
+                    }
+                    else {
+                        CreateTip(val, base)
+                    }
                 }
             }
         }
@@ -1132,44 +1182,51 @@ GetExeName(){
 GetLangIcon(syntax, folder){
     global svgmap
     tipicon  := ""
-    try {
-        if (svgmap.Has(folder)){
-            tipicon := svgmap[folder]
+    if (svgmap.Has(folder)){
+        tipicon := svgmap[folder]
+    }
+    else if (svgmap.Has(syntax)) && (syntax != "autohotkey") && (syntax != "sh"){
+        tipicon := svgmap[syntax]
+    }
+    else if (syntax = "c_cpp"){
+        tipicon := (folder = "c") ? svgmap["c"] : svgmap["cpp"]
+    }
+    else if (syntax = "asp_vb_net"){
+        tipicon := (folder = "vb.net") ? svgmap["vb_net"] : svgmap[folder]
+    }
+    else if (syntax = "pascal"){
+        tipicon := (folder = "delphi") ? svgmap["delphi"] : svgmap["freepascal"]
+    }
+    else if (syntax = "autohotkey"){
+        tipicon := (folder = "autohotkey") ? svgmap["autohotkey"] : svgmap["autoit"]
+    }
+    else if (syntax = "sh"){
+        tipicon := svgmap["sh"]
+    }
+    else if (syntax = "f3"){
+        tipicon := svgmap["php"]
+    }
+    else if (syntax = "js"){
+        tipicon := svgmap["javascript"]
+    }
+    else if ((syntax = "ahk") || (folder = "ahk")){
+        tipicon := svgmap["autohotkey"]
+    }
+    else if ((syntax = "au3") || (folder = "au3")){
+        tipicon := svgmap["autoit"]
+    }
+    else if ((syntax = "txt") || (folder = "txt") || (syntax = "text") || (folder = "text")){
+        tipicon := svgmap["plain_text"]
+    }
+    else {
+        if (svgmap.Has(syntax)){
+            tipicon := svgmap[syntax]
         }
         else {
-            tipicon := svgmap[syntax]
+            tipicon := false
         }
     }
-    catch {
-        if (svgmap.Has(syntax)) && (syntax != "autohotkey") && (syntax != "sh"){
-            tipicon := svgmap[syntax]
-        }
-        else if (syntax = "c_cpp"){
-            tipicon := (folder = "c") ? svgmap["c"] : svgmap["cpp"]
-        }
-        else if (syntax = "asp_vb_net"){
-            tipicon := (folder = "vb.net") ? svgmap["vb_net"] : svgmap[folder]
-        }
-        else if (syntax = "pascal"){
-            tipicon := (folder = "delphi") ? svgmap["delphi"] : svgmap["freepascal"]
-        }
-        else if (syntax = "autohotkey"){
-            tipicon := (folder = "autohotkey") ? svgmap["autohotkey"] : svgmap["autoit"]
-        }
-        else if (syntax = "sh"){
-            tipicon := svgmap["sh"]
-        }
-        else if (syntax = "f3"){
-            tipicon := svgmap["php"]
-        }
-        else {
-            tipicon := svgmap[syntax]
-        }
-        if (tipicon = ""){
-            return ""
-        }                 
-    }
-    return tipicon
+    return tipicon  
 }
 
 GetAppIcon(object){

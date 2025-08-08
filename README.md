@@ -16,16 +16,14 @@ snipman is a snippet manager written in AutoHotkey v2
 
 ## Features
 
-- massCode integration (loads snippets directly from your massCode database)
-- Alternatively, load snippets directly from plain text files or scripts
+- massCode integration (loads snippets directly from your massCode database) **OR** load snippets directly from plain text files or scripts
 - Full text preview on snippet hover
 - Automatic dark / light mode theme based on system settings
 - Option to run automatically with Windows
-- Position the caret inside the snippet after inserting it into a document (see demo)
+- Incremental Search
+- Option to position the caret inside the snippet after inserting it into a document (see demo)
 
   ![demo](./.github/snipman2.gif)
-
-- Incremental Search
   
   ![demo2](./.github/snipman.gif)
 
