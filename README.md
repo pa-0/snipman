@@ -9,6 +9,7 @@
 *      |___________________ SNIPPET MANAGER ___________________|      *
 *                                                                     *
 ```
+![snipman logo](https://raw.githubusercontent.com/pa-0/snipman/refs/heads/main/gui/smdark.svg)
 
 # [snipman](https://github.com/pa-0/snipman)
 

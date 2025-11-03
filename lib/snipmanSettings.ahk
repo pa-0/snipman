@@ -1,4 +1,4 @@
-Gui.Prototype.DefineProp("AddDarkCheckBox", {Call: AddDarkCheckBox})
+﻿Gui.Prototype.DefineProp("AddDarkCheckBox", {Call: AddDarkCheckBox})
 global conf
     ,  sfile
     ,  sg
@@ -475,7 +475,7 @@ SettingsGui(at?){
             Reload()
             sgmade := false
         }
-}
+    }
 
     gEdit(gco, Info, *){ ; Detects a change and enables the Apply button
         ab.Enabled := true
