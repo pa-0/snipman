@@ -1,18 +1,6 @@
-![snipman logo](https://raw.githubusercontent.com/pa-0/snipman/refs/heads/main/gui/smdark.svg)
-
-```c
-*                                                                     *
-*      ███████ ███    ██ ██ ██████  ███    ███  █████  ███    ██      *
-*      ██      ████   ██ ██ ██   ██ ████  ████ ██   ██ ████   ██      *
-*      ███████ ██ ██  ██ ██ ██████  ██ ████ ██ ███████ ██ ██  ██      *
-*           ██ ██  ██ ██ ██ ██      ██  ██  ██ ██   ██ ██  ██ ██      *
-*      ███████ ██   ████ ██ ██      ██      ██ ██   ██ ██   ████      *
-*                                                                     *
-*      |___________________ SNIPPET MANAGER ___________________|      *
-*                                                                     *
-```
-
 # [snipman](https://github.com/pa-0/snipman)
+
+![snipman logo](https://raw.githubusercontent.com/pa-0/snipman/refs/heads/main/gui/smdark.svg)
 
 snipman is a snippet manager written in AutoHotkey v2
 
