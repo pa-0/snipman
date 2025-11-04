@@ -1,6 +1,6 @@
-# [snipman](https://github.com/pa-0/snipman)
-
 <div align="center">
+
+# [snipman](https://github.com/pa-0/snipman)
 
 ![snipman logo](https://raw.githubusercontent.com/pa-0/snipman/refs/heads/main/gui/smdark.svg)
 
